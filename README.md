@@ -1,1 +1,2 @@
-# res_proj
+# Force-compile multi-stage containers and bring up all ecosystem processes
+docker compose up --build
