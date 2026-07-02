@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Digital Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e2022, #0f1011);
+        }
+
+        /* 3D Physical Calculator Body Chassis */
+        .calculator-chassis {
+            width: 100%;
+            max-width: 360px;
+            background: #2b2e33;
+            padding: 24px;
+            border-radius: 28px;
+            box-shadow: 
+                0px 20px 40px rgba(0, 0, 0, 0.6),
+                inset 0px 2px 2px rgba(255, 255, 255, 0.2),
+                inset 0px -4px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid #1a1c1e;
+        }
+
+        /* Matte Liquid Crystal Screen Layout */
+        .lcd-screen {
+            background-color: #0f1115;
+            padding: 16px 20px;
+            border-radius: 16px;
+            text-align: right;
+            margin-bottom: 24px;
+            min-height: 96px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.8);
+            border: 1px solid #3a3f44;
+            overflow: hidden;
+        }
+
+        .lcd-screen .history-line {
+            color: #727b84;
+            font-size: 1rem;
+            min-height: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lcd-screen .input-line {
+            color: #ffffff;
+            font-size: 2.3rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* Keypad Layout Structure */
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        /* Physical Tactile Button Mechanics */
+        button {
+            border: none;
+            padding: 18px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: all 0.1s ease;
+            box-shadow: 0px 4px 0px #151618;
+        }
+
+        /* Dynamic Hover and Press Transforms */
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 0px #151618;
+            filter: brightness(1.15);
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0px 0px 0px #151618;
+        }
+
+        /* Color Code Configurations */
+        .btn-number {
+            background-color: #3e434c;
+            color: #ffffff;
+            box-shadow: 0px 4px 0px #24272c;
+        }
+        .btn-number:hover { box-shadow: 0px 6px 0px #24272c; }
+
+        .btn-operator {
+            background-color: #f2a115;
+            color: #ffffff;
+            box-shadow: 0px 4px 0px #b57407;
+        }
+        .btn-operator:hover { box-shadow: 0px 6px 0px #b57407; }
+
+        .btn-utility {
+            background-color: #616975;
+            color: #ffffff;
+            box-shadow: 0px 4px 0px #3f444c;
+        }
+        .btn-utility:hover { box-shadow: 0px 6px 0px #3f444c; }
+
+        .btn-clear {
+            background-color: #e04444;
+            color: #ffffff;
+            box-shadow: 0px 4px 0px #9e2a2a;
+        }
+        .btn-clear:hover { box-shadow: 0px 6px 0px #9e2a2a; }
+
+        .btn-equal {
+            background-color: #2da94f;
+            color: #ffffff;
+            grid-column: span 2;
+            box-shadow: 0px 4px 0px #1b6b31;
+        }
+        .btn-equal:hover { box-shadow: 0px 6px 0px #1b6b31; }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-chassis">
+        <!-- Display Unit -->
+        <div class="lcd-screen">
+            <div class="history-line" id="history"></div>
+            <div class="input-line" id="display">0</div>
+        </div>
+
+        <!-- Keypad Unit -->
+        <div class="keypad-grid">
+            <!-- Row 1 -->
+            <button class="btn-clear" onclick="clearDisplay()">C</button>
+            <button class="btn-utility" onclick="deleteDigit()">⌫</button>
+            <button class="btn-utility" onclick="appendOperator('%')">%</button>
+            <button class="btn-operator" onclick="appendOperator('/')">÷</button>
+
+            <!-- Row 2 -->
+            <button class="btn-number" onclick="appendNumber('7')">7</button>
+            <button class="btn-number" onclick="appendNumber('8')">8</button>
+            <button class="btn-number" onclick="appendNumber('9')">9</button>
+            <button class="btn-operator" onclick="appendOperator('*')">×</button>
+
+            <!-- Row 3 -->
+            <button class="btn-number" onclick="appendNumber('4')">4</button>
+            <button class="btn-number" onclick="appendNumber('5')">5</button>
+            <button class="btn-number" onclick="appendNumber('6')">6</button>
+            <button class="btn-operator" onclick="appendOperator('-')">−</button>
+
+            <!-- Row 4 -->
+            <button class="btn-number" onclick="appendNumber('1')">1</button>
+            <button class="btn-number" onclick="appendNumber('2')">2</button>
+            <button class="btn-number" onclick="appendNumber('3')">3</button>
+            <button class="btn-operator" onclick="appendOperator('+')">+</button>
+
+            <!-- Row 5 -->
+            <button class="btn-number" onclick="appendNumber('0')">0</button>
+            <button class="btn-number" onclick="appendDecimal()">.</button>
+            <button class="btn-equal" onclick="executeCalculation()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const history = document.getElementById('history');
+
+        let displayValue = '0';
+        let storedOperand = null;
+        let activeOperator = null;
+        let clearOnNextInput = false;
+
+        function appendNumber(num) {
+            if (displayValue === '0' || clearOnNextInput) {
+                displayValue = num;
+                clearOnNextInput = false;
+            } else {
+                displayValue += num;
+            }
+            refreshUI();
+        }
+
+        function appendDecimal() {
+            if (clearOnNextInput) {
+                displayValue = '0.';
+                clearOnNextInput = false;
+                refreshUI();
+                return;
+            }
+            if (!displayValue.includes('.')) {
+                displayValue += '.';
+                refreshUI();
+            }
+        }
+
+        function appendOperator(op) {
+            const currentNum = parseFloat(displayValue);
+
+            if (activeOperator && !clearOnNextInput) {
+                executeCoreMath();
+            } else {
+                storedOperand = parseFloat(displayValue);
+            }
+
+            activeOperator = op;
+            clearOnNextInput = true;
+            history.innerText = `${storedOperand} ${getOpSymbol(op)}`;
+        }
+
+        function executeCoreMath() {
+            if (activeOperator === null) return;
+
+            const secondOperand = parseFloat(displayValue);
+            let evaluationResult = 0;
+
+            switch (activeOperator) {
+                case '+': evaluationResult = storedOperand + secondOperand; break;
+                case '-': evaluationResult = storedOperand - secondOperand; break;
+                case '*': evaluationResult = storedOperand * secondOperand; break;
+                case '/': 
+                    if (secondOperand === 0) {
+                        displayValue = "Error";
+                        refreshUI();
+                        resetCalculatorState();
+                        return;
+                    }
+                    evaluationResult = storedOperand / secondOperand; 
+                    break;
+                case '%': evaluationResult = storedOperand % secondOperand; break;
+                default: return;
+            }
+
+            // Sanitizes floating point discrepancies like 0.1 + 0.2
+            displayValue = String(Number(evaluationResult.toFixed(10)));
+            storedOperand = evaluationResult;
+        }
+
+        function executeCalculation() {
+            if (activeOperator === null) return;
+            
+            const secondOperand = parseFloat(displayValue);
+            history.innerText = `${storedOperand} ${getOpSymbol(activeOperator)} ${secondOperand} =`;
+            
+            executeCoreMath();
+            activeOperator = null;
+            clearOnNextInput = true;
+            refreshUI();
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            resetCalculatorState();
+            refreshUI();
+        }
+
+        function deleteDigit() {
+            if (clearOnNextInput || displayValue === 'Error') return;
+            if (displayValue.length > 1) {
+                displayValue = displayValue.slice(0, -1);
+            } else {
+                displayValue = '0';
+            }
+            refreshUI();
+        }
+
+        function resetCalculatorState() {
+            storedOperand = null;
+            activeOperator = null;
+            clearOnNextInput = false;
+            history.innerText = '';
+        }
+
+        function getOpSymbol(op) {
+            if (op === '*') return '×';
+            if (op === '/') return '÷';
+            return op;
+        }
+
+        function refreshUI() {
+            display.innerText = displayValue;
+        }
+    </script>
+</body>
+</html>
